@@ -1,0 +1,20 @@
+# pip req file with debug information : READ IT !
+
+pocketsphinx
+# you need to install build tools, and git for pb below 
+# use choco as following: 
+# choco install visualcpp-build-tools
+
+
+
+# PyDictionary
+# warning future is not supported, needed by a dependency you need to install using the github repo 
+# choco install git
+# pip install -e git+https://github.com/yeahwhat-mc/goslate#egg=goslate
+# do not use do not have method for pronunciation.
+
+pronouncing
+
+#google-api-python-client
+pip install SpeechRecognition
+pyaudio
