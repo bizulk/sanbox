@@ -50,27 +50,27 @@ Also there is a project for an open source alternative, the community thread is 
 
 This chapter is all about DIY with MIDI and understanding the standard.
 It is needed if you want to hands on the project.
-An intrduction to [MIDI (fr)][15].
-Developping MIDI interface with the teensy : [dedicated library][16].
+An introduction to [MIDI (fr)][15].
+Developping MIDI interface with the teensy: [dedicated library][16].
 What is a [MIDI keyboard controller (fr)][17].
 
 
 
 
-[1]: [http://www.vgmpf.com/Wiki/index.php?title=Genesis]
-[2]: [https://www.aidanlawrence.com/mega-midi-a-playable-version-of-my-hardware-sega-genesis-synth/]
-[3]: [https://www.google.com/search?client=firefox-b-d&q=sega+genesis+as+midi+controller]
-[4]: [https://www.lookmumnocomputer.com/sega-megadrive-synth]
-[5]: [https://catskullelectronics.com/products/genmdm?variant=29399089381454]
-[6]: [https://www.vandoeselaar.com/tinkering/clone-yourself-a-genmdm/]
-[7]: [http://little-scale.blogspot.com/search/label/genmdm%20tutorials]
-[8]: [https://chipmusic.org/forums/topic/562/sega-md-gen-genmdm-sega-genesis-mega-drive-midi-interface/]
-[9]: [https://www.youtube.com/watch?v=uE3FbmMKl-U]
-[10]: [https://github.com/2xAA/genmdm-editor]
-[11]: [https://chipmusic.org/forums/topic/9365/sega-master-system-how-to-make-a-sega-master-system-midi-interface/]
+[1]: http://www.vgmpf.com/Wiki/index.php?title=Genesis
+[2]: https://www.aidanlawrence.com/mega-midi-a-playable-version-of-my-hardware-sega-genesis-synth
+[3]: https://www.google.com/search?client=firefox-b-d&q=sega+genesis+as+midi+controller
+[4]: https://www.lookmumnocomputer.com/sega-megadrive-synth
+[5]: https://catskullelectronics.com/products/genmdm?variant=29399089381454
+[6]: https://www.vandoeselaar.com/tinkering/clone-yourself-a-genmdm/
+[7]: http://little-scale.blogspot.com/search/label/genmdm%20tutorials
+[8]: https://chipmusic.org/forums/topic/562/sega-md-gen-genmdm-sega-genesis-mega-drive-midi-interface/
+[9]: https://www.youtube.com/watch?v=uE3FbmMKl-U
+[10]: https://github.com/2xAA/genmdm-editor
+[11]: https://chipmusic.org/forums/topic/9365/sega-master-system-how-to-make-a-sega-master-system-midi-interface/
 [12]: https://chipmusic.org/forums/topic/24476/open-source-mega-drive-midi-interface/
-[13]: [https://digital.library.adelaide.edu.au/dspace/bitstream/2440/70888/10/Tomczak2011_PhD.pdf]
-[14]: [https://www.retrorgb.com/genesistriplebypass.html]
-[15]: [https://fr.audiofanzine.com/mao/editorial/dossiers/le-midi-introduction.html]
-[16]: [https://www.pjrc.com/teensy/td_libs_MIDI.html]
-[17]: [https://formation-clavier.com/clavier-maitre-midi-a-quoi-ca-sert/]
+[13]: https://digital.library.adelaide.edu.au/dspace/bitstream/2440/70888/10/Tomczak2011_PhD.pdf
+[14]: https://www.retrorgb.com/genesistriplebypass.html
+[15]: https://fr.audiofanzine.com/mao/editorial/dossiers/le-midi-introduction.html
+[16]: https://www.pjrc.com/teensy/td_libs_MIDI.html
+[17]: https://formation-clavier.com/clavier-maitre-midi-a-quoi-ca-sert/
