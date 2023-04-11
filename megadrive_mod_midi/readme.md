@@ -16,11 +16,12 @@ This arctile will present :
 # Projects dedicated to YM2612
 
 There are many projects focusing in the YM2612 only that interface the chip with a tensy to expose it as a midi device.  
-This article shows a [breadboard prototype][2] "Mega Midi", interfacing to a keyboard controller.
+This article shows a [prototype][2] "Mega Midi", interfacing to a keyboard controller. The project is rather finished with a PCB version 2.
+That hardware seems to be pretty popular, I  found GENNY, a FL Studio plugin Genny that supports it (/ also packged a VST). take a look at this [youtube tutorial][18] for a demo.
 
 # Create musing on desktop only 
 
-TODO : Delflemask and open source project : see linuxfr / SGDK (fr) article.
+TODO : Deflemask and open source project : see linuxfr / SGDK (fr) article.
 
 # Modding the megadrive to make a midi controller
 
@@ -44,7 +45,7 @@ Fact is that interfacing directly the genMDM with a keyboard controller will not
 There are other SW solution like the [gen-mdm editor][10] released as a web browser plugin (open source).
 
 Infortunately the genmdm is sold out and not easily found on "used" market (ebay). A guy provided a tip for ["genmdm DIY"][6].
-Also there is a project for an open source alternative, the community thread is also on [chipmusic][12]. This project tries to be more versatile supporting several hardware for the ROM (everdrive, other cartridge), and the interface (serial, megawifi, ...).
+Also there is a project "Mega Drive Midi Interface" as an open source alternative available on [github][19]. The "community thread" is also on [chipmusic][12]. This project tries to be more versatile supporting several hardwares for the ROM (everdrive, other cartridge), and the console interfaces (serial, megawifi, ...).
 
 # Project "roots"
 
@@ -74,3 +75,5 @@ What is a [MIDI keyboard controller (fr)][17].
 [15]: https://fr.audiofanzine.com/mao/editorial/dossiers/le-midi-introduction.html
 [16]: https://www.pjrc.com/teensy/td_libs_MIDI.html
 [17]: https://formation-clavier.com/clavier-maitre-midi-a-quoi-ca-sert/
+[18]: https://www.youtube.com/watch?v=Zj_5T7NWTXM&t=2s
+[19]: https://github.com/rhargreaves/mega-drive-midi-interface
