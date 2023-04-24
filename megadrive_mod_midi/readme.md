@@ -16,11 +16,12 @@ This arctile will present :
 # Projects dedicated to YM2612
 
 There are many projects focusing in the YM2612 only that interface the chip with a tensy to expose it as a midi device.  
-This article shows a [breadboard prototype][2] "Mega Midi", interfacing to a keyboard controller.
+This article shows a [prototype][2] "Mega Midi", interfacing to a keyboard controller. The project is rather finished with a PCB version 2.
+That hardware seems to be pretty popular, I  found GENNY, a FL Studio plugin Genny that supports it (/ also packged a VST). take a look at this [youtube tutorial][18] for a demo.
 
 # Create musing on desktop only 
 
-TODO : Delflemask and open source project : see linuxfr / SGDK (fr) article.
+TODO : Deflemask and open source project : see linuxfr / SGDK (fr) article.
 
 # Modding the megadrive to make a midi controller
 
@@ -44,33 +45,35 @@ Fact is that interfacing directly the genMDM with a keyboard controller will not
 There are other SW solution like the [gen-mdm editor][10] released as a web browser plugin (open source).
 
 Infortunately the genmdm is sold out and not easily found on "used" market (ebay). A guy provided a tip for ["genmdm DIY"][6].
-Also there is a project for an open source alternative, the community thread is also on [chipmusic][12]. This project tries to be more versatile supporting several hardware for the ROM (everdrive, other cartridge), and the interface (serial, megawifi, ...).
+Also there is a project "Mega Drive Midi Interface" as an open source alternative available on [github][19]. The "community thread" is also on [chipmusic][12]. This project tries to be more versatile supporting several hardwares for the ROM (everdrive, other cartridge), and the console interfaces (serial, megawifi, ...).
 
 # Project "roots"
 
 This chapter is all about DIY with MIDI and understanding the standard.
 It is needed if you want to hands on the project.
-An intrduction to [MIDI (fr)][15].
-Developping MIDI interface with the teensy : [dedicated library][16].
+An introduction to [MIDI (fr)][15].
+Developping MIDI interface with the teensy: [dedicated library][16].
 What is a [MIDI keyboard controller (fr)][17].
 
 
 
 
-[1]: [http://www.vgmpf.com/Wiki/index.php?title=Genesis]
-[2]: [https://www.aidanlawrence.com/mega-midi-a-playable-version-of-my-hardware-sega-genesis-synth/]
-[3]: [https://www.google.com/search?client=firefox-b-d&q=sega+genesis+as+midi+controller]
-[4]: [https://www.lookmumnocomputer.com/sega-megadrive-synth]
-[5]: [https://catskullelectronics.com/products/genmdm?variant=29399089381454]
-[6]: [https://www.vandoeselaar.com/tinkering/clone-yourself-a-genmdm/]
-[7]: [http://little-scale.blogspot.com/search/label/genmdm%20tutorials]
-[8]: [https://chipmusic.org/forums/topic/562/sega-md-gen-genmdm-sega-genesis-mega-drive-midi-interface/]
-[9]: [https://www.youtube.com/watch?v=uE3FbmMKl-U]
-[10]: [https://github.com/2xAA/genmdm-editor]
-[11]: [https://chipmusic.org/forums/topic/9365/sega-master-system-how-to-make-a-sega-master-system-midi-interface/]
+[1]: http://www.vgmpf.com/Wiki/index.php?title=Genesis
+[2]: https://www.aidanlawrence.com/mega-midi-a-playable-version-of-my-hardware-sega-genesis-synth
+[3]: https://www.google.com/search?client=firefox-b-d&q=sega+genesis+as+midi+controller
+[4]: https://www.lookmumnocomputer.com/sega-megadrive-synth
+[5]: https://catskullelectronics.com/products/genmdm?variant=29399089381454
+[6]: https://www.vandoeselaar.com/tinkering/clone-yourself-a-genmdm/
+[7]: http://little-scale.blogspot.com/search/label/genmdm%20tutorials
+[8]: https://chipmusic.org/forums/topic/562/sega-md-gen-genmdm-sega-genesis-mega-drive-midi-interface/
+[9]: https://www.youtube.com/watch?v=uE3FbmMKl-U
+[10]: https://github.com/2xAA/genmdm-editor
+[11]: https://chipmusic.org/forums/topic/9365/sega-master-system-how-to-make-a-sega-master-system-midi-interface/
 [12]: https://chipmusic.org/forums/topic/24476/open-source-mega-drive-midi-interface/
-[13]: [https://digital.library.adelaide.edu.au/dspace/bitstream/2440/70888/10/Tomczak2011_PhD.pdf]
-[14]: [https://www.retrorgb.com/genesistriplebypass.html]
-[15]: [https://fr.audiofanzine.com/mao/editorial/dossiers/le-midi-introduction.html]
-[16]: [https://www.pjrc.com/teensy/td_libs_MIDI.html]
-[17]: [https://formation-clavier.com/clavier-maitre-midi-a-quoi-ca-sert/]
+[13]: https://digital.library.adelaide.edu.au/dspace/bitstream/2440/70888/10/Tomczak2011_PhD.pdf
+[14]: https://www.retrorgb.com/genesistriplebypass.html
+[15]: https://fr.audiofanzine.com/mao/editorial/dossiers/le-midi-introduction.html
+[16]: https://www.pjrc.com/teensy/td_libs_MIDI.html
+[17]: https://formation-clavier.com/clavier-maitre-midi-a-quoi-ca-sert/
+[18]: https://www.youtube.com/watch?v=Zj_5T7NWTXM&t=2s
+[19]: https://github.com/rhargreaves/mega-drive-midi-interface
