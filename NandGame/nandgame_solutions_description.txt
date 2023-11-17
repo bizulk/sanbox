@@ -1,4 +1,19 @@
 ----------------------------------------------------------------------
+15 Arithemtic Logic Unit
+----------------------------------------------------------------------
+
+Lower Level Selectors : 
+	Allow to select between X and Y
+Second level selector : 
+	Allow to select between X and 0
+	
+Upper Level : ALU and ARU using selector output.
+
+Upper Level : A selector to use ALU our ARU according to u input
+
+This is the simplest solution.
+
+----------------------------------------------------------------------
 15 Arithemtic Unit
 ----------------------------------------------------------------------
 
@@ -13,3 +28,4 @@
 	
 To select between (X,Y) or (X,1) I use op0 which is set only for (X,1) operations.
 
+This solution is not optimised.
