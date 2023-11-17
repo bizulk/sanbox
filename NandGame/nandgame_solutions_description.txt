@@ -1,0 +1,15 @@
+----------------------------------------------------------------------
+15 Arithemtic Unit
+----------------------------------------------------------------------
+
+(X+Y) (X-Y) 
+	Used add16 for and sub16 to compute
+	Then I used op1 as input selector between those 2.
+	
+(X+1) and (X-1) : 
+	X+1 : op1 must be set so I use It as an input.
+	X-1 : op1 must be set so I use it as input
+	Then a Use op1 as input selector between those 2.
+	
+To select between (X,Y) or (X,1) I use op0 which is set only for (X,1) operations.
+
