@@ -1,4 +1,16 @@
 ----------------------------------------------------------------------
+17 Condition
+----------------------------------------------------------------------
+
+I take flags combination to dermine the case, then I use the comparison with an and gate to get the output.
+To minimize comparison I pair the flag with one comparison and its contrary, example from left to right : 
+X>=0 and X<0
+X=0 and X != 0
+X>0 and X<=0
+
+We need to add some logic for the always true case.
+
+----------------------------------------------------------------------
 15 Arithemtic Logic Unit
 ----------------------------------------------------------------------
 
