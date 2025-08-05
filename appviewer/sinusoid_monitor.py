@@ -1,117 +1,118 @@
+#!/usr/bin/env python3
+"""
+    Real-time process variable visualizer using Dash and sinusoid_memproxy
+    Parameters like MAX_POINTS, UPDATE_INTERVAL_MS and read_interval_s are configurable from the frontend.
+    Configuration is saved in a JSON file for persistence.
+"""
+
 import dash
 from dash import dcc, html
 import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output, State
 import plotly.graph_objs as go
 import pandas as pd
-
-import psutil
-import os
-import struct
-from time import sleep
 from threading import Thread
-from elftools.elf.elffile import ELFFile
+from time import sleep
+import json
+from pathlib import Path
 
-# === Configuration ===
-ELF_PATH = "./sinusoid"
-VARIABLES = ['X', 'Y', 'A', 'B', 'run']
-MAX_POINTS = 500
-UPDATE_INTERVAL_MS = 100
+from sinusoid_memproxy import SinusoidProxy
 
-# === ELF Symbol resolution ===
-def get_variable_offsets(elf_path):
-    with open(elf_path, 'rb') as f:
-        elf = ELFFile(f)
-        symtab = elf.get_section_by_name('.symtab')
-        if not symtab:
-            raise RuntimeError("No symbol table found.")
-        symbols = {}
-        for sym in symtab.iter_symbols():
-            if sym.name in VARIABLES:
-                symbols[sym.name] = sym['st_value']
-        return symbols
+# === Config persistence ===
+CONFIG_FILE = Path("monitor_config.json")
+DEFAULT_CONFIG = {
+    "max_points": 500,
+    "update_interval_ms": 100,
+    "read_interval_ms": 10
+}
 
-def find_pid_by_name(name):
-    for proc in psutil.process_iter(['pid', 'name', 'exe']):
+def load_config():
+    if CONFIG_FILE.exists():
         try:
-            if proc.info['exe'] and os.path.basename(proc.info['exe']) == name:
-                return proc.pid
-        except psutil.AccessDenied:
-            continue
-    return None
+            return json.loads(CONFIG_FILE.read_text())
+        except:
+            return DEFAULT_CONFIG.copy()
+    else:
+        return DEFAULT_CONFIG.copy()
 
-def get_base_address(pid, elf_path):
-    with open(f"/proc/{pid}/maps") as f:
-        for line in f:
-            if elf_path in line:
-                return int(line.split('-')[0], 16)
-    raise RuntimeError("Base address not found.")
+def save_config(conf):
+    with open(CONFIG_FILE, 'w') as f:
+        json.dump(conf, f, indent=4)
 
-# === Memory access ===
-def read_double(pid, addr):
-    with open(f"/proc/{pid}/mem", "rb", buffering=0) as mem:
-        mem.seek(addr)
-        return struct.unpack('d', mem.read(8))[0]
+config = load_config()
 
-def write_double(pid, addr, value):
-    with open(f"/proc/{pid}/mem", "rb+", buffering=0) as mem:
-        mem.seek(addr)
-        mem.write(struct.pack('d', value))
-
-def write_int(pid, addr, value):
-    with open(f"/proc/{pid}/mem", "rb+", buffering=0) as mem:
-        mem.seek(addr)
-        mem.write(struct.pack('i', value))
-
-def read_int(pid, addr):
-    with open(f"/proc/{pid}/mem", "rb", buffering=0) as mem:
-        mem.seek(addr)
-        return struct.unpack('i', mem.read(4))[0]
-
-# === Acquisition loop ===
+# === Init proxy ===
+proxy = SinusoidProxy()
 buffer_x, buffer_y = [], []
-def start_read_loop(pid, var_addrs):
+
+def read_loop():
     global buffer_x, buffer_y
     while True:
         try:
-            x = read_double(pid, var_addrs['X'])
-            y = read_double(pid, var_addrs['Y'])
+            x, y = proxy.get_XY()
             buffer_x.append(x)
             buffer_y.append(y)
-            if len(buffer_x) > MAX_POINTS:
-                buffer_x = buffer_x[-MAX_POINTS:]
-                buffer_y = buffer_y[-MAX_POINTS:]
+
+            max_len = config["max_points"]
+            if len(buffer_x) > max_len:
+                buffer_x = buffer_x[-max_len:]
+                buffer_y = buffer_y[-max_len:]
         except Exception as e:
-            print("Read error:", e)
-        sleep(0.01)
+            print(f"[read_loop] Error: {e}")
+        sleep(config["read_interval_ms"] / 1000.0)
 
-# === Initialisation du processus ===
-symbols = get_variable_offsets(ELF_PATH)
-pid = find_pid_by_name("sinusoid")
-if pid is None:
-    raise RuntimeError("Process not running.")
-base_addr = get_base_address(pid, os.path.realpath(ELF_PATH))
-var_addrs = {name: base_addr + offset for name, offset in symbols.items()}
-
-thread = Thread(target=start_read_loop, args=(pid, var_addrs), daemon=True)
+# === Start background thread ===
+thread = Thread(target=read_loop, daemon=True)
 thread.start()
 
 # === Dash App ===
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
+
 app.layout = dbc.Container([
     html.H3("🧠 Real-time Process Monitor: Y = cos(aX + B)"),
+
+    # Parameter controls
+    html.H5("🔧 Configuration"),
+    dbc.Row([
+        dbc.Col(dbc.Label("Graph Update Interval (ms):"), width=3),
+        dbc.Col(dcc.Slider(id="update-interval-slider", min=50, max=1000, step=50,
+                           value=config["update_interval_ms"],
+                           tooltip={"placement": "bottom"}), width=7),
+        dbc.Col(html.Div(id="update-interval-display"), width=2),
+    ], className="mb-2"),
+    dbc.Row([
+        dbc.Col(dbc.Label("Graph Max Points:"), width=3),
+        dbc.Col(dcc.Slider(id="max-points-slider", min=100, max=2000, step=100,
+                           value=config["max_points"],
+                           tooltip={"placement": "bottom"}), width=7),
+        dbc.Col(html.Div(id="max-points-display"), width=2),
+    ], className="mb-2"),
+    dbc.Row([
+        dbc.Col(dbc.Label("data sampling Interval (ms):"), width=3),
+        dbc.Col(dcc.Slider(id="read-interval-slider", min=1, max=100, step=10,
+                           value=config["read_interval_ms"],
+                           tooltip={"placement": "bottom"}), width=7),
+        dbc.Col(html.Div(id="read-interval-display"), width=2),
+    ], className="mb-4"),
+
+    html.Hr(),
+
+    # Controls
     dbc.Row([
         dbc.Col(dbc.Label("A:"), width=1),
-        dbc.Col(dcc.Slider(id="a-slider", min=0, max=10, step=0.1, value=1.0, marks=None, tooltip={"placement": "bottom"}), width=8),
+        dbc.Col(dcc.Slider(id="a-slider", min=0, max=10, step=0.1, value=proxy.get_A(),
+                           marks=None, tooltip={"placement": "bottom"}), width=8),
         dbc.Col(html.Div(id="a-display"), width=3)
     ]),
     dbc.Row([
         dbc.Col(dbc.Label("B:"), width=1),
-        dbc.Col(dcc.Slider(id="b-slider", min=-10, max=10, step=0.1, value=0.0, marks=None, tooltip={"placement": "bottom"}), width=8),
+        dbc.Col(dcc.Slider(id="b-slider", min=-10, max=10, step=0.1, value=proxy.get_B(),
+                           marks=None, tooltip={"placement": "bottom"}), width=8),
         dbc.Col(html.Div(id="b-display"), width=3)
     ]),
     dbc.Row([
-        dbc.Button(id='run-button', n_clicks=0, color="primary", children="Pause" if read_int(pid, var_addrs['run']) else "Run"),
+        dbc.Button(id='run-button', n_clicks=0, color="primary",
+                   children="Pause" if proxy.get_run() else "Run"),
     ], className="my-3"),
     dbc.Row([
         dbc.Button("Reset View", id="reset-view-btn", color="secondary", className="mr-2"),
@@ -119,23 +120,21 @@ app.layout = dbc.Container([
         dcc.Download(id="download-data")
     ], className="mb-3"),
     dcc.Graph(id='live-plot'),
-    dcc.Interval(id='interval', interval=UPDATE_INTERVAL_MS, n_intervals=0)
+
+    # Hidden store for update interval
+    dcc.Interval(id='interval', interval=config["update_interval_ms"], n_intervals=0),
 ], fluid=True)
 
-@app.callback(
-    Output("a-display", "children"),
-    Input("a-slider", "value")
-)
+# === Callbacks ===
+
+@app.callback(Output("a-display", "children"), Input("a-slider", "value"))
 def update_a_display(value):
-    write_double(pid, var_addrs['A'], value)
+    proxy.set_A(value)
     return f"A = {value:.2f}"
 
-@app.callback(
-    Output("b-display", "children"),
-    Input("b-slider", "value")
-)
+@app.callback(Output("b-display", "children"), Input("b-slider", "value"))
 def update_b_display(value):
-    write_double(pid, var_addrs['B'], value)
+    proxy.set_B(value)
     return f"B = {value:.2f}"
 
 @app.callback(
@@ -143,10 +142,10 @@ def update_b_display(value):
     Input("run-button", "n_clicks"),
     State("run-button", "children")
 )
-def toggle_run(n, current_label):
-    new_value = 0 if current_label == "Pause" else 1
-    write_int(pid, var_addrs['run'], new_value)
-    return "Run" if new_value == 0 else "Pause"
+def toggle_run(n_clicks, current_label):
+    new_value = current_label == "Run"
+    proxy.set_run(new_value)
+    return "Pause" if new_value else "Run"
 
 @app.callback(
     Output("live-plot", "figure"),
@@ -154,13 +153,10 @@ def toggle_run(n, current_label):
     State("run-button", "children")
 )
 def update_plot(n, run_label):
-    frozen = (run_label == "Run")  # bouton affiche "Run" ⇒ process est gelé
-
-    if read_int(pid, var_addrs['run']) == 0:
-        # Return last frozen graph (no new data)
+    frozen = run_label == "Run"
+    if not proxy.get_run():
         return dash.no_update
-    
-    # Données figées
+
     fig = go.Figure(
         data=[go.Scatter(x=buffer_x, y=buffer_y, mode='lines+markers')],
         layout=go.Layout(
@@ -178,7 +174,7 @@ def update_plot(n, run_label):
     prevent_initial_call=True
 )
 def reset_view(n_clicks):
-    return {}  # Dash interprète ça comme "reset layout"
+    return {}
 
 @app.callback(
     Output("download-data", "data"),
@@ -188,6 +184,31 @@ def reset_view(n_clicks):
 def export_csv(n_clicks):
     df = pd.DataFrame({'X': buffer_x, 'Y': buffer_y})
     return dcc.send_data_frame(df.to_csv, "sinusoid_trace.csv", index=False)
+
+@app.callback(
+    Output("interval", "interval"),
+    Input("update-interval-slider", "value")
+)
+def update_interval_slider(val):
+    config["update_interval_ms"] = val
+    save_config(config)
+    return val
+
+@app.callback(Output("update-interval-display", "children"), Input("update-interval-slider", "value"))
+def show_update_interval(val):
+    return f"{val} ms"
+
+@app.callback(Output("max-points-display", "children"), Input("max-points-slider", "value"))
+def update_max_points(val):
+    config["max_points"] = val
+    save_config(config)
+    return f"{val} points"
+
+@app.callback(Output("read-interval-display", "children"), Input("read-interval-slider", "value"))
+def update_read_interval(val_ms):
+    config["read_interval_ms"] = val_ms
+    save_config(config)
+    return f"{val_ms} ms"
 
 if __name__ == "__main__":
     app.run(debug=True)

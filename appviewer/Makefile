@@ -4,4 +4,12 @@ sinusoid: sinusoid.cpp Makefile
 all: sinusoid
 
 run: sinusoid
-	sudo $(which python3) sinusoid_monitor.py
+	./sinusoid
+	echo "sudo $(which python3) sinusoid_monitor.py"
+
+.venv: 
+	python3 -m venv .venv
+
+venv : requirements.txt .venv
+	echo source .venv/bin/activate
+
