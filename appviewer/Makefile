@@ -8,8 +8,17 @@
 all: help
 
 # install python vend & build
-install: .venv sinusoid
+install: .venv sinusoid ptrace_scope
+	# allow ptrace for non-root users
+	# this is needed only once and valid until next reboot
+	@echo 0 | sudo tee /proc/sys/kernel/yama/ptrace_scope
 	@echo "Installation complete. type make run to start the demo."
+
+ptrace_scope:
+	# allow ptrace for non-root users
+	# this is needed only once and valid until next reboot
+	@echo 0 | sudo tee /proc/sys/kernel/yama/ptrace_scope
+	@echo "ptrace_scope set to 0."
 
 # build the c++ demo
 sinusoid: sinusoid.cpp Makefile
@@ -23,9 +32,9 @@ sinusoid: sinusoid.cpp Makefile
 	. .venv/bin/activate ; pip install -r requirements.txt  
 
 # run the demo and open the web browser client
-run: sinusoid
+run: sinusoid ptrace_scope
 	./sinusoid & echo $$! > sinusoid.pid
-	sudo .venv/bin/python sinusoid_monitor.py & echo $$! > sinusoid_monitor.pid
+	.venv/bin/python sinusoid_monitor.py & echo $$! > sinusoid_monitor.pid
 	@echo "Waiting for server to start..."
 	sleep 2
 	@echo "Opening web browser..."
@@ -46,15 +55,15 @@ help: Makefile
 	@sed -n -e '/^#/ {s/^# *//; h; n; /^[a-zA-Z0-9_.-]\+:/ {s/:.*//; G; s/\n/ : /; p}}' $<
 
 #  test the generic memory proxy functionality : list variables in the elf file
-test_memproxy: .venv
+test_memproxy: .venv ptrace_scope
 	@echo "Test listing variables."
 	. .venv/bin/activate ; python procmemproxy.py --elf sinusoid --listvars
 	@echo "Launching sinusoid for read/write test."
 	@./sinusoid & echo $$! > sinusoid.pid;
 	@echo "test reading/writing variable 'run' in sinusoid process."
-	@sudo .venv/bin/python ./procmemproxy.py --elf sinusoid --read run int ; \
-	sudo .venv/bin/python ./procmemproxy.py --elf sinusoid --write run int 0; \
-	sudo .venv/bin/python ./procmemproxy.py --elf sinusoid --read run int;
+	@.venv/bin/python ./procmemproxy.py --elf sinusoid --read run int ; \
+	.venv/bin/python ./procmemproxy.py --elf sinusoid --write run int 0; \
+	.venv/bin/python ./procmemproxy.py --elf sinusoid --read run int;
 	@if [ -f sinusoid.pid ]; then \
 		kill -9 $$(cat sinusoid.pid) || true; \
 		rm -f sinusoid.pid; \
@@ -64,13 +73,13 @@ test_memproxy: .venv
 	@echo "Test complete. try memory proxy with --read and --write options."
 
 #  test the sinusoid proxy functionality : list variables in the elf file
-test_sinusoid_proxy: .venv
+test_sinusoid_proxy: .venv ptrace_scope
 	@echo "Launching sinusoid for read/write test."
 	@./sinusoid & echo $$! > sinusoid.pid;
 	@echo "test reading/writing variable 'run' in sinusoid process."
-	@sudo .venv/bin/python ./sinusoid_memproxy.py --elf sinusoid --read XY ; \
-	sudo .venv/bin/python ./sinusoid_memproxy.py --elf sinusoid --read run ; \
-	sudo .venv/bin/python ./sinusoid_memproxy.py --elf sinusoid --read A ;
+	@.venv/bin/python ./sinusoid_memproxy.py --elf sinusoid --read XY ; \
+	.venv/bin/python ./sinusoid_memproxy.py --elf sinusoid --read run ; \
+	.venv/bin/python ./sinusoid_memproxy.py --elf sinusoid --read A ;
 	@if [ -f sinusoid.pid ]; then \
 		kill -9 $$(cat sinusoid.pid) || true; \
 		rm -f sinusoid.pid; \
