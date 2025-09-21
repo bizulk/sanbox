@@ -48,7 +48,6 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--elf', type=str, default="./sinusoid", help="ELF absolute/relative file path")
     parser.add_argument('--proc', type=str, default=None, help="Optional: override process name")
-    parser.add_argument('--listvars', action='store_true', help="List found variables and their addresses")
     parser.add_argument('--read', nargs=1, metavar='VAR', help="Read a variable (A, B, run, XY)")
     parser.add_argument('--write', nargs=2, metavar=('VAR', 'VALUE'), help="Write a variable (A, B, run)")
 
@@ -57,15 +56,7 @@ def main():
 
     try:
         proxy = SinusoidProxy(args.elf)
-
-        if args.listvars:
-            print("Variable,Address(hex),Size,Bind,Type")
-            for var, info in proxy.get_variables():
-                addr = proxy.proxy.base_addr + info['offset']
-                print(f"{var},{hex(addr)},{info['size']},{info['bind']},{info['type']}")
-            return
-
-        elif args.read:
+        if args.read:
             var = args.read[0]
             if var not in [v for v in proxy.VARIABLES] and var != "XY" :
                 print(f"Variable '{var}' not known. Should be in: {proxy.VARIABLES} or 'XY'", file=sys.stderr)
@@ -78,7 +69,6 @@ def main():
                     print(getattr(proxy, method_name)())
                 else:
                     print(f"Read method for '{var}' not implemented.", file=sys.stderr)
-
         elif args.write:
             var, value = args.write
             if var not in [v for v in proxy.VARIABLES]:
